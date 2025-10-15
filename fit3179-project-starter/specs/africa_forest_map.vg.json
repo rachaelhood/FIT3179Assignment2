@@ -1,0 +1,53 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "World Forest Cover (1990 → 2020)",
+  "width": "container",
+  "height": 520,
+  "projection": {"type": "equalEarth"},
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "#eaeaea", "stroke": "white", "strokeWidth": 0.5}
+    },
+    {
+      "data": {"url": "./data/WorldForestCover_1990to2020.csv"},
+      "transform": [
+        {
+          "lookup": "Country",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+              "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+            },
+            "key": "properties.NAME"
+          },
+          "as": "geo"
+        },
+        {"calculate": "toNumber(datum['forest_1990_pct'])", "as": "f1990"},
+        {"calculate": "toNumber(datum['forest_2020_pct'])", "as": "f2020"},
+        {"calculate": "datum.f2020 - datum.f1990", "as": "forest_change_pp"}
+      ],
+      "mark": {"type": "geoshape", "stroke": "#fff", "strokeWidth": 0.5},
+      "encoding": {
+        "shape": {"field": "geo", "type": "geojson"},
+        "color": {
+          "field": "f2020",
+          "type": "quantitative",
+          "title": "% Forest cover (2020)",
+          "scale": {"scheme": "greens"},
+          "legend": {"format": ".0f"}
+        },
+        "tooltip": [
+          {"field": "Country", "type": "nominal"},
+          {"field": "f1990", "type": "quantitative", "title": "% in 1990", "format": ".1f"},
+          {"field": "f2020", "type": "quantitative", "title": "% in 2020", "format": ".1f"},
+          {"field": "forest_change_pp", "type": "quantitative", "title": "Change (pp)", "format": "+.1f"}
+        ]
+      }
+    }
+  ]
+}
+
