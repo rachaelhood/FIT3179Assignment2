@@ -1,8 +1,133 @@
-<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FIT3179 — Wildlife & Forests (Vega-Lite)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<div id="map" class="chart"></div>
-<div id="behaviour" class="chart"></div>
+  <!-- Vega libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
-<script src="./js/main.js"></script>
+  <style>
+    :root { --w: 1100px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: #111; background: #fff; line-height: 1.5;
+    }
+    header { position: sticky; top: 0; z-index: 10; background:#f6f7fb; border-bottom:1px solid #e7e9f2; }
+    .wrap   { max-width: var(--w); margin: 0 auto; padding: 16px 20px; }
+    h1 { margin: 0 0 6px; font-size: 1.7rem; }
+    nav { font-size: .95rem; white-space: nowrap; overflow-x: auto; }
+    nav a { color:#2d5bd1; text-decoration: none; margin-right: 14px; }
+    nav a:hover { text-decoration: underline; }
+
+    main { max-width: var(--w); margin: 0 auto; padding: 22px; }
+    section { padding: 28px 0; border-bottom: 1px dashed #eaeaea; }
+    h2 { margin: 0 0 6px; font-size: 1.35rem; }
+    p.note { margin: 8px 0 16px; color:#555; font-size: .95rem; }
+    .chart { margin: 12px 0; }
+
+    footer { max-width: var(--w); margin: 0 auto 60px; padding: 22px; color:#555; }
+    code { background:#f3f4f6; padding:2px 6px; border-radius:6px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <h1>Wildlife & Forests — Interactive Idioms (Vega-Lite)</h1>
+      <nav>
+        <a href="#i1">1. Behaviour mix by region</a>
+        <a href="#i2">2. Species presence across forest regions</a>
+        <a href="#i3">3. Locations map </a>
+        <a href="#i4">4. Forest cover by regions</a>
+        <a href="#i5">5. Forest Cover Change (1990–2020)</a>
+        <a href="#i6">6. Temp vs HR (brush)</a>
+        <a href="#i7">7. Diurnal HR (small multiples)</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="i1">
+      <h2>Idiom #1 — Behaviour mix by forest region (normalized)</h2>
+      <p class="note">Distribution of <code>motion_type</code> per <code>forest_region</code> with a species dropdown.</p>
+      <div id="v_i1" class="chart"></div>
+    </section>
+
+    <section id="i2">
+      <h2>Idiom #2 — Species presence across forest regions</h2>
+      <p class="note">A heatmap of observation counts showing how frequently each species appears in every forest region.</p>
+      <div id="v_i2" class="chart"></div>
+    </section>
+
+    <section id="i3">
+      <h2>Idiom #3 — Wildlife observations map (species & region filters)</h2>
+      <p class="note">Points coloured by species; bubble size reflects behaviour duration.</p>
+      <div id="v_i3" class="chart"></div>
+    </section>
+
+    <section id="i4">
+      <h2>Idiom #4 — Forest cover by regions</h2>
+      <p class="note">Bar chart of forest cover for linked regions.</p>
+      <div id="v_i4" class="chart"></div>
+    </section>
+
+    <section id="i5">
+      <h2>Idiom #5 — Forest Cover Change (1990–2020) by Region</h2>
+      <p class="note">This chart compares the percentage point change in forest cover between 1990 and 2020 across major forest regions, highlighting where deforestation or regrowth has occurred most dramatically.</p>
+      <div id="v_i5" class="chart"></div>
+    </section>
+
+    <section id="i6">
+      <h2>Idiom #6— Observation intensity by region (choropleth)</h2>
+      <p class="note">Country shading shows the number of wildlife observations in that region; hover for details.</p>
+      <div id="v_i6" class="chart"></div>
+    </section>
+
+<script>
+  vegaEmbed("#v_i6","./specs/idiom6_region_activity_choropleth.vg.json",{actions:false});
+</script>
+
+
+    <section id="i7">
+      <h2>Idiom #7 — Diurnal heart-rate rhythm (mean by hour, small multiples)</h2>
+      <p class="note">Average heart rate by hour of day, faceted by species.</p>
+      <div id="v_i7" class="chart"></div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Data:</strong> <code>data/Wildlife_Data.csv</code>, <code>data/WorldForestCover_1990to2020.csv</code> |
+    <strong>Tech:</strong> Vega-Lite v5 & vega-embed
+  </footer>
+
+  <script>
+    // Minimal embed helper with friendly error fallback
+    const OPTS = { actions: false, renderer: "canvas" };
+    const specs = [
+      ["#v_i1", "./specs/idiom1_behaviour_mix_by_region.vg.json"],
+      ["#v_i2", "./specs/idiom2_location_status_by_month.vg.json"],
+      ["#v_i3", "./specs/idiom3_locations_map_crossfilter.vg.json"],
+      ["#v_i4", "./specs/idiom4_forest_change_vs_activity_tile.vg.json"],
+      ["#v_i5", "./specs/idiom5_forest_change_vs_activity_tile.vg.json"],
+      ["#v_i6", "./specs/idiom6_region_activity_choropleth.vg.json"],
+      ["#v_i7", "./specs/idiom7_diurnal_hr_small_multiples.vg.json"]
+    ];
+
+    specs.forEach(([el, spec]) => {
+      vegaEmbed(el, spec, OPTS).catch(err => {
+        const d = document.querySelector(el);
+        if (d) d.innerHTML =
+          "<pre style='color:#b00020;white-space:pre-wrap'>Failed to load " +
+          spec + ":\n\n" + err + "</pre>";
+        console.error("Embed failed:", spec, err);
+      });
+    });
+  </script>
+</body>
+</html>

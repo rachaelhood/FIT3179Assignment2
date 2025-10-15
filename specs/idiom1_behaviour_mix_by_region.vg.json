@@ -1,0 +1,25 @@
+{
+  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+  "title":"Behaviour mix by forest region (normalized)",
+  "width": 980, "height": 420,
+  "data":{"url":"./data/Wildlife_Data.csv"},
+  "params":[
+    {"name":"sp","value":null,"bind":{"input":"select","options":[null,"Elephant","Lion","Zebra","Giraffe","Rhino","Gorilla"],"labels":["All","Elephant","Lion","Zebra","Giraffe","Rhino","Gorilla"]}}
+  ],
+  "transform":[
+    {"filter":"isValid(datum.forest_region) && isValid(datum.motion_type)"},
+    {"filter":"sp == null || datum.species == sp"}
+  ],
+  "mark":"bar",
+  "encoding":{
+    "x":{"field":"forest_region","type":"nominal","title":"Forest region"},
+    "y":{"aggregate":"count","type":"quantitative","stack":"normalize","title":"Share"},
+    "color":{"field":"motion_type","type":"nominal","title":"Behaviour"},
+    "tooltip":[
+      {"field":"forest_region","title":"Region"},
+      {"field":"motion_type","title":"Behaviour"},
+      {"aggregate":"count","title":"Records"}
+    ]
+  },
+  "config":{"legend":{"orient":"bottom"}}
+}

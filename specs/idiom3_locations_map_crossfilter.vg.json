@@ -1,0 +1,92 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Wildlife observations (filter by species & region)",
+  "width": 980,
+  "height": 520,
+  "projection": {"type": "equalEarth"},
+  "params": [
+    {
+      "name": "spF",
+      "value": null,
+      "bind": {
+        "input": "select",
+        "options": [null, "Elephant", "Lion", "Zebra", "Giraffe", "Rhino", "Gorilla"],
+        "labels": ["All", "Elephant", "Lion", "Zebra", "Giraffe", "Rhino", "Gorilla"]
+      }
+    },
+    {
+      "name": "regF",
+      "value": null,
+      "bind": {
+        "input": "select",
+        "options": [null, "Amazon", "Daintree", "Yellowstone", "Congo Basin", "Sundarbans", "Nyungwe"],
+        "labels": ["All", "Amazon", "Daintree", "Yellowstone", "Congo Basin", "Sundarbans", "Nyungwe"]
+      }
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "#f3f3f3", "stroke": "white"}
+    },
+    {
+      "data": {"url": "./data/Wildlife_Data.csv"},
+      "transform": [
+        {
+          "filter": "(spF == null || datum.species == spF) && (regF == null || datum.forest_region == regF)"
+        },
+        {
+          "lookup": "forest_region",
+          "from": {
+            "data": {
+              "values": [
+                {"forest_region": "Amazon", "lat": -3.0, "lon": -60.0},
+                {"forest_region": "Daintree", "lat": -16.1, "lon": 145.4},
+                {"forest_region": "Yellowstone", "lat": 44.6, "lon": -110.5},
+                {"forest_region": "Congo Basin", "lat": -1.0, "lon": 15.0},
+                {"forest_region": "Sundarbans", "lat": 21.95, "lon": 89.2},
+                {"forest_region": "Nyungwe", "lat": -2.48, "lon": 29.2}
+              ]
+            },
+            "key": "forest_region",
+            "fields": ["lat", "lon"]
+          },
+          "as": ["lat", "lon"]
+        },
+        {"calculate": "toNumber(datum.behavior_duration_hours)", "as": "dur"},
+        {
+          "aggregate": [
+            {"op": "count", "as": "n"},
+            {"op": "mean", "field": "dur", "as": "mean_dur"}
+          ],
+          "groupby": ["forest_region", "species", "lat", "lon"]
+        }
+      ],
+      "mark": {"type": "circle", "opacity": 0.85, "stroke": "#ffffff", "strokeWidth": 1.2},
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"},
+        "size": {
+          "field": "n",
+          "type": "quantitative",
+          "title": "Observations",
+          "scale": {"range": [30, 600]}
+        },
+        "color": {"field": "species", "type": "nominal", "title": "Species"},
+        "tooltip": [
+          {"field": "forest_region", "title": "Region"},
+          {"field": "species", "title": "Species"},
+          {"field": "n", "title": "Observations"},
+          {"field": "mean_dur", "title": "Mean duration (h)", "format": ".2f"}
+        ]
+      }
+    }
+  ],
+  "config": {
+    "legend": {"title": null},
+    "view": {"stroke": null}
+  }
+}

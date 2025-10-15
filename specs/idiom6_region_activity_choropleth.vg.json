@@ -1,0 +1,62 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Wildlife observation intensity by region (country choropleth)",
+  "width": 980,
+  "height": 520,
+  "projection": {"type": "equalEarth"},
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "#f3f3f3", "stroke": "white"}
+    },
+    {
+      "data": {"url": "./data/Wildlife_Data.csv"},
+      "transform": [
+        {"filter": "isValid(datum.forest_region)"},
+        {"calculate": "toNumber(datum['heart_rate'])", "as": "hr"},
+        {
+          "calculate": "datum.forest_region=='Amazon' ? 'Brazil' : datum.forest_region=='Daintree' ? 'Australia' : datum.forest_region=='Yellowstone' ? 'United States of America' : datum.forest_region=='Congo Basin' ? 'Democratic Republic of the Congo' : datum.forest_region=='Sundarbans' ? 'Bangladesh' : datum.forest_region=='Nyungwe' ? 'Rwanda' : null",
+          "as": "Country"
+        },
+        {"filter": "datum.Country != null"},
+        {
+          "aggregate": [
+            {"op": "count", "as": "obs"},
+            {"op": "mean", "field": "hr", "as": "mean_hr"}
+          ],
+          "groupby": ["Country"]
+        },
+        {
+          "lookup": "Country",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+              "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+            },
+            "key": "properties.NAME"
+          },
+          "as": "geo"
+        }
+      ],
+      "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 1},
+      "encoding": {
+        "shape": {"field": "geo", "type": "geojson"},
+        "color": {
+          "field": "obs",
+          "type": "quantitative",
+          "title": "Observations",
+          "scale": {"scheme": "greens"}
+        },
+        "tooltip": [
+          {"field": "Country"},
+          {"field": "obs", "title": "Observations"},
+          {"field": "mean_hr", "title": "Mean HR (bpm)", "format": ".1f"}
+        ]
+      }
+    }
+  ],
+  "config": {"view": {"stroke": null}, "legend": {"orient": "right"}}
+}

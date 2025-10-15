@@ -1,0 +1,24 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Diurnal heart-rate rhythm (mean by hour of day)",
+  "data": {"url": "./data/Wildlife_Data.csv"},
+  "transform": [
+    {"filter": "isValid(datum.timestamp) && isValid(datum['heart_rate']) && isValid(datum.species)"},
+    {"calculate": "toNumber(datum['heart_rate'])", "as": "hr"}
+  ],
+  "facet": {"field": "species", "type": "nominal", "title": null},
+  "spec": {
+    "width": 220,
+    "height": 160,
+    "mark": {"type": "line", "point": true},
+    "encoding": {
+      "x": {"timeUnit": "hours", "field": "timestamp", "type": "temporal", "title": "Hour (0–23)"},
+      "y": {"aggregate": "mean", "field": "hr", "type": "quantitative", "title": "Mean HR"},
+      "color": {"value": "#2D5BD1"}
+    }
+  },
+  "config": {
+    "facet": {"columns": 4},
+    "axis": {"labelFontSize": 10, "titleFontSize": 11}
+  }
+}

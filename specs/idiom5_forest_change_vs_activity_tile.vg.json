@@ -1,0 +1,89 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Forest cover change (percentage points, 1990 → 2020) — ranked by region",
+  "width": 860,
+  "height": 360,
+  "data": { "url": "./data/WorldForestCover_1990to2020.csv" },
+  "transform": [
+    {
+      "lookup": "Country",
+      "from": {
+        "data": {
+          "values": [
+            { "Country": "Brazil", "Region": "Amazon" },
+            { "Country": "Australia", "Region": "Daintree" },
+            { "Country": "United States of America", "Region": "Yellowstone" },
+            { "Country": "United States", "Region": "Yellowstone" },
+            { "Country": "Democratic Republic of the Congo", "Region": "Congo Basin" },
+            { "Country": "Bangladesh", "Region": "Sundarbans" },
+            { "Country": "India", "Region": "Sundarbans" },
+            { "Country": "Rwanda", "Region": "Nyungwe" }
+          ]
+        },
+        "key": "Country",
+        "fields": ["Region"]
+      }
+    },
+    { "filter": "datum.Region != null" },
+
+    { "calculate": "toNumber(datum['forest_1990_pct'])", "as": "f1990" },
+    { "calculate": "toNumber(datum['forest_2020_pct'])", "as": "f2020" },
+
+    {
+      "aggregate": [
+        { "op": "mean", "field": "f1990", "as": "f1990m" },
+        { "op": "mean", "field": "f2020", "as": "f2020m" }
+      ],
+      "groupby": ["Region"]
+    },
+
+    { "calculate": "datum.f2020m - datum.f1990m", "as": "change_pp" }
+  ],
+  "layer": [
+    { "mark": { "type": "rule", "stroke": "#bbb" }, "encoding": { "x": { "value": 0 } } },
+
+    {
+      "mark": { "type": "bar", "cornerRadius": 3 },
+      "encoding": {
+        "y": {
+          "field": "Region",
+          "type": "nominal",
+          "sort": {"field": "change_pp", "order": "descending"},
+          "title": null
+        },
+        "x": {
+          "field": "change_pp",
+          "type": "quantitative",
+          "title": "Change in forest cover (percentage points)",
+          "axis": { "format": "+.0f" }
+        },
+        "color": {
+          "field": "change_pp",
+          "type": "quantitative",
+          "title": null,
+          "scale": {
+            "domain": [-20, 0, 20],
+            "range": ["#d73027", "#f7f7f7", "#1a9850"]
+          }
+        },
+        "tooltip": [
+          { "field": "Region" },
+          { "field": "f1990m", "title": "% in 1990", "format": ".1f" },
+          { "field": "f2020m", "title": "% in 2020", "format": ".1f" },
+          { "field": "change_pp", "title": "Change (pp)", "format": "+.1f" }
+        ]
+      }
+    },
+
+    {
+      "mark": { "type": "text", "align": "left", "dx": 6, "baseline": "middle", "fontSize": 11 },
+      "encoding": {
+        "y": { "field": "Region", "type": "nominal", "sort": {"field": "change_pp", "order": "descending"} },
+        "x": { "field": "change_pp", "type": "quantitative" },
+        "text": { "field": "change_pp", "type": "quantitative", "format": "+.1f" },
+        "color": { "value": "#333" }
+      }
+    }
+  ],
+  "config": { "view": { "stroke": null }, "axisY": { "labelLimit": 240 } }
+}

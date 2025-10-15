@@ -1,0 +1,43 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "hconcat": [
+    {
+      "title": "Total Forest cover per Forest",
+      "width": 320,
+      "height": 360,
+      "data": { "url": "./data/Wildlife_Data.csv" },
+      "transform": [
+        {
+          "filter": "isValid(datum.forest_region) && indexof(['Amazon','Daintree','Yellowstone','Congo Basin','Sundarbans','Nyungwe'], datum.forest_region) >= 0"
+        }
+      ],
+      "mark": { "type": "bar" },
+      "encoding": {
+        "y": {
+          "field": "forest_region",
+          "type": "nominal",
+          "sort": "-x",
+          "title": "Region"
+        },
+        "x": { "aggregate": "count", "type": "quantitative", "title": "Observations" },
+        "color": {
+          "field": "forest_region",
+          "type": "nominal",
+          "title": null,
+          "scale": {
+            "domain": ["Amazon", "Daintree", "Yellowstone", "Congo Basin", "Sundarbans", "Nyungwe"],
+            "range": ["#1b9e77", "#e7298a", "#7570b3", "#d95f02", "#66a61e", "#e6ab02"]
+          }
+        },
+        "tooltip": [
+          { "field": "forest_region", "title": "Region" },
+          { "aggregate": "count", "title": "Observations" }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "axisY": { "labelLimit": 220 },
+    "view": { "stroke": null }
+  }
+}

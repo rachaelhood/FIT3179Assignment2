@@ -1,0 +1,56 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Species presence by forest region (counts)",
+  "data": {"url": "./data/Wildlife_Data.csv"},
+  "transform": [
+    {"filter": "isValid(datum.species) && isValid(datum.forest_region)"},
+    {
+      "aggregate": [{"op": "count", "as": "n"}],
+      "groupby": ["species", "forest_region"]
+    },
+    {
+      "joinaggregate": [{"op": "sum", "field": "n", "as": "species_total"}],
+      "groupby": ["species"]
+    }
+  ],
+
+  "width": 650,
+  "height": {"step": 22},
+
+  "mark": {"type": "rect", "stroke": "#fff", "strokeWidth": 0.5},
+  "encoding": {
+    "x": {
+      "field": "forest_region",
+      "type": "nominal",
+      "title": "Region",
+      "axis": {
+        "labelAngle": 0,
+        "labelLimit": 120,
+        "labelOverlap": false,
+        "labelExpr": "replace(datum.label, ' ', '\\n')"
+      }
+    },
+    "y": {
+      "field": "species",
+      "type": "nominal",
+      "title": "Species",
+      "sort": {"field": "species_total", "order": "descending"}
+    },
+    "color": {
+      "field": "n",
+      "type": "quantitative",
+      "title": "Observations",
+      "scale": {"scheme": "blues"}
+    },
+    "tooltip": [
+      {"field": "species", "title": "Species"},
+      {"field": "forest_region", "title": "Region"},
+      {"field": "n", "title": "Observations"},
+      {"field": "species_total", "title": "Species total"}
+    ]
+  },
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"labelFontSize": 11, "titleFontSize": 12}
+  }
+}
