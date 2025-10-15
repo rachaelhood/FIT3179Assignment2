@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>African Forests & Wildlife — FIT3179</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; line-height:1.5; color:#111;}
+    header{padding:2rem 1rem; background:#f6f6f9; border-bottom:1px solid #eee;}
+    main{max-width:1100px; margin:0 auto; padding:1rem;}
+    .section{margin:2rem 0;}
+    .chart{margin:1rem 0;}
+    footer{padding:2rem 1rem; font-size:0.9rem; color:#555; border-top:1px solid #eee; background:#fafafa;}
+    .note{font-size:0.95rem; color:#444}
+    code{background:#f3f3f6; padding:0.1rem 0.3rem; border-radius:4px;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>African Forests & Wildlife</h1>
+  <p class="note">Scroll-led storytelling prototype created with Vega-Lite. Replace the CSVs in <code>/data</code> and update specs as you iterate.</p>
+</header>
+
+<main>
+  <section class="section">
+    <h2>Forest Cover in Africa (1990 → 2020)</h2>
+    <div id="map" class="chart"></div>
+    <p class="note">Shows % forest cover by country (2020) with tooltip comparing 1990 vs 2020. Data joined to a Natural Earth TopoJSON base.</p>
+  </section>
+
+  <section class="section">
+    <h2>Wildlife Behaviour in African Forest Regions</h2>
+    <div id="behaviour" class="chart"></div>
+    <p class="note">Proportion of behaviour types per species for records in Congo Basin or Nyungwe.</p>
+  </section>
+</main>
+
+<footer>
+  <p>Built for FIT3179 (Vega-Lite). Base map approach follows Week 8 & 10 studios. Replace data in <code>/data</code> and edit specs in <code>/specs</code>.</p>
+</footer>
+
+<script src="./js/main.js"></script>
+</body>
+</html>
